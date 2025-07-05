@@ -1,0 +1,49 @@
+# Core Streamlit and Web Framework
+streamlit>=1.28.0
+plotly>=5.15.0
+pandas>=2.0.0
+numpy>=1.24.0
+
+# File Processing
+PyPDF2>=3.0.1
+python-docx>=0.8.11
+pdfplumber>=0.9.0
+PyMuPDF>=1.23.0
+
+# HTTP and API
+requests>=2.31.0
+python-dotenv>=1.0.0
+
+# AI and ML (Optional)
+google-generativeai>=0.3.0
+mistralai>=0.0.8
+
+# Email and Validation
+email-validator>=2.0.0
+validators>=0.20.0
+
+# PDF and Document Generation
+reportlab>=4.0.0
+fpdf2>=2.7.0
+
+# Web Scraping (Optional)
+beautifulsoup4>=4.12.0
+firecrawl-py>=0.0.8
+
+# Email Services (Optional)
+yagmail>=0.15.0
+
+# File Type Detection
+python-magic>=0.4.27
+
+# Web Framework Support
+python-multipart>=0.0.5
+
+# Testing (Development)
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+
+# Additional utilities
+python-dateutil>=2.8.0
+regex>=2023.0.0
