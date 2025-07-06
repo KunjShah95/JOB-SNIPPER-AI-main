@@ -53,7 +53,9 @@ class MultiAIAgent(AdvancedAgentBase):
         user_context: dict - user/session context for personalization or logging
         """
         super().__init__(
-            name=name, enable_caching=cache_enabled, max_retries=max_retries
+            name=name, 
+            enable_caching=cache_enabled, 
+            max_retries=max_retries
         )
         self.gemini_available = False
         self.mistral_available = False
@@ -75,51 +77,6 @@ class MultiAIAgent(AdvancedAgentBase):
         self.user_context = user_context or {}
         self.setup_ai_clients()
 
-    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Default implementation of abstract process method from Agent base class.
-
-        This method provides a default implementation that child classes can override.
-        It converts input_data to a prompt and uses the AI generation capabilities.
-
-        Args:
-            input_data: Dictionary containing the data to process
-
-        Returns:
-            Dictionary containing the processed results
-        """
-        try:
-            # Default behavior: convert input to string and generate response
-            if isinstance(input_data, dict):
-                # Try to extract meaningful prompt from input_data
-                if "prompt" in input_data:
-                    prompt = input_data["prompt"]
-                elif "data" in input_data:
-                    prompt = f"Process this data: {input_data['data']}"
-                else:
-                    prompt = f"Process this input: {input_data}"
-            else:
-                prompt = f"Process this input: {input_data}"
-
-            # Generate response using AI
-            response = self.generate_ai_response(prompt)
-
-            # Return structured result
-            return {
-                "success": True,
-                "result": response,
-                "input": input_data,
-                "agent": self.name,
-            }
-
-        except Exception as e:
-            # Return error response
-            return {
-                "success": False,
-                "error": str(e),
-                "input": input_data,
-                "agent": self.name,
-            }
-
     def setup_ai_clients(self):
         """Setup both Gemini and Mistral clients if available"""
         # Setup Gemini
@@ -128,10 +85,10 @@ class MultiAIAgent(AdvancedAgentBase):
                 import google.generativeai as genai
 
                 genai.configure(api_key=GEMINI_API_KEY)
-                self.gemini_model = genai.GenerativeModel("gemini-2.5-pro")
+                self.gemini_model = genai.GenerativeModel("gemini-2.0-flash")
                 self.gemini_available = True
                 if self.verbose:
-                    logging.info("Gemini 2.5 Pro client initialized.")
+                    logging.info("Gemini client initialized.")
             except Exception as e:
                 logging.warning(f"Failed to setup Gemini: {e}")
         # Setup Mistral
@@ -431,9 +388,7 @@ class MultiAIAgent(AdvancedAgentBase):
         """Override this method in child classes for specific fallback responses"""
         return "Fallback response - API providers unavailable"
 
-    def process(
-        self, input_data: Dict[str, Any], context: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    def process(self, input_data: Dict[str, Any], context: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Process input data using multiple AI providers
         """
@@ -442,39 +397,33 @@ class MultiAIAgent(AdvancedAgentBase):
             if isinstance(input_data, str):
                 prompt = input_data
             elif isinstance(input_data, dict):
-                prompt = input_data.get("prompt", str(input_data))
+                prompt = input_data.get('prompt', str(input_data))
             else:
                 prompt = str(input_data)
-
+            
             # Generate response using multi-AI
             response = self.generate_response(prompt)
-
+            
             return {
                 "response": response,
                 "success": True,
-                "providers_used": [
-                    p for p in self.provider_priority if self._is_provider_available(p)
-                ],
+                "providers_used": [p for p in self.provider_priority if self._is_provider_available(p)]
             }
-
+            
         except Exception as e:
             self.logger.error(f"Process failed: {e}")
             return {
                 "response": self.get_fallback_response(str(input_data)),
                 "success": False,
-                "error": str(e),
+                "error": str(e)
             }
 
     def get_specialized_prompt_template(self):
         """
         Get default prompt template for MultiAIAgent
         """
-        from agents.advanced_agent_base import (
-            PromptTemplate,
-            ReasoningMode,
-            PromptComplexity,
-        )
-
+        from agents.advanced_agent_base import PromptTemplate, ReasoningMode, PromptComplexity
+        
         return PromptTemplate(
             system_prompt="You are a helpful AI assistant with access to multiple AI providers.",
             user_prompt="Please provide a comprehensive response to the following query:",
@@ -483,7 +432,7 @@ class MultiAIAgent(AdvancedAgentBase):
             context_variables={},
             validation_rules=[],
             examples=[],
-            constraints=[],
+            constraints=[]
         )
 
     def _is_provider_available(self, provider: str) -> bool:
